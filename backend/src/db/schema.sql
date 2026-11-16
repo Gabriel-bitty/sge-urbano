@@ -1,0 +1,1 @@
+-- O schema será definido na próxima etapa, com base nos requisitos e casos de teste.

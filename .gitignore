@@ -1,0 +1,14 @@
+node_modules/
+.env
+*.log
+coverage/
+.nyc_output/
+instrumented/
+cypress/videos/
+cypress/screenshots/
+data/*.sqlite
+data/*.sqlite-journal
+data/*.sqlite-shm
+data/*.sqlite-wal
+.DS_Store
+
