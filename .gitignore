@@ -9,3 +9,9 @@ cypress/screenshots/
 backend/data/
 .DS_Store
 
+# Ignorar possiveis arquivos de banco de dados local.
+*.sqlite
+*.sqlite3
+*.db
+*.db-shm
+*.db-wal
