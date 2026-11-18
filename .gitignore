@@ -6,9 +6,6 @@ coverage/
 instrumented/
 cypress/videos/
 cypress/screenshots/
-data/*.sqlite
-data/*.sqlite-journal
-data/*.sqlite-shm
-data/*.sqlite-wal
+backend/data/
 .DS_Store
 
