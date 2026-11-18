@@ -1,0 +1,17 @@
+node_modules/
+.env
+*.log
+coverage/
+.nyc_output/
+instrumented/
+cypress/videos/
+cypress/screenshots/
+backend/data/
+.DS_Store
+
+# Ignorar possiveis arquivos de banco de dados local.
+*.sqlite
+*.sqlite3
+*.db
+*.db-shm
+*.db-wal
