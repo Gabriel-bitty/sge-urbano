@@ -1,5 +1,12 @@
+-- =============================================================================
+-- SGE-Urbano — Migração 001: Esquema Inicial do Banco SQLite
+-- Rastreabilidade: RF01–RF18; RN01–RN30; RNF02, RNF04–RNF07, RNF13, RNF16,
+--                  RNF17, RNF19; UC01–UC16; CT02–CT04, CT17, CT26
+-- =============================================================================
+
 PRAGMA foreign_keys = ON;
 
+-- 1. Parâmetros de Anomalia (RF06, RF07, RN06, RN07, RNF13, CT05, CT06)
 CREATE TABLE IF NOT EXISTS anomaly_parameters (
   name TEXT PRIMARY KEY,
   value REAL NOT NULL CHECK (value >= 0),
@@ -23,6 +30,8 @@ INSERT OR IGNORE INTO anomaly_parameters (name, value) VALUES
   ('FAIXA_MEDIA', 20),
   ('FAIXA_ALTA', 50);
 
+-- 2. Tabela de Usuários (RF01, RF02, RN01, RN11, RN30, RNF04)
+-- O Cidadão não possui cadastro ou login no sistema (RN01, RN22).
 CREATE TABLE IF NOT EXISTS users (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
   name TEXT NOT NULL CHECK (length(trim(name)) >= 2),
@@ -34,6 +43,7 @@ CREATE TABLE IF NOT EXISTS users (
   updated_at TEXT NOT NULL
 );
 
+-- 3. Tabela de Sessões Autenticadas (RF01, RN30, RNF05, RNF06, CT01)
 CREATE TABLE IF NOT EXISTS sessions (
   id TEXT PRIMARY KEY,
   user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE RESTRICT,
@@ -45,6 +55,7 @@ CREATE TABLE IF NOT EXISTS sessions (
 
 CREATE INDEX IF NOT EXISTS idx_sessions_user_id ON sessions(user_id);
 
+-- 4. Tabela de Regiões (RF03, RF15, RF17, RN04, RN16, RN17, RN20, RN27, RN29)
 CREATE TABLE IF NOT EXISTS regions (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
   name TEXT NOT NULL UNIQUE CHECK (length(trim(name)) >= 2),
@@ -60,6 +71,7 @@ CREATE TABLE IF NOT EXISTS regions (
   updated_at TEXT NOT NULL
 );
 
+-- 5. Tabela de Equipamentos Públicos (RF04, RF05, RF15, RF17, RN02–RN04, RN16, RN17, RN20, RN27, RN29)
 CREATE TABLE IF NOT EXISTS equipments (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
   region_id INTEGER NOT NULL REFERENCES regions(id) ON DELETE RESTRICT,
@@ -83,6 +95,7 @@ CREATE TABLE IF NOT EXISTS equipments (
 CREATE INDEX IF NOT EXISTS idx_equipments_region_id ON equipments(region_id);
 CREATE INDEX IF NOT EXISTS idx_equipments_status ON equipments(status);
 
+-- 6. Tabela de Leituras Simuladas (RF05, RF06, RF14, RF16, RN04, RN05, RN24, RNF17, CT04)
 CREATE TABLE IF NOT EXISTS readings (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
   equipment_id INTEGER NOT NULL REFERENCES equipments(id) ON DELETE RESTRICT,
@@ -111,6 +124,7 @@ CREATE INDEX IF NOT EXISTS idx_readings_equipment_id
 CREATE INDEX IF NOT EXISTS idx_readings_recorded_at
   ON readings(recorded_at);
 
+-- 7. Tabela de Alertas de Anomalia (RF07, RF08, RN07, RN08, RN14, RN17, RN18, RN25)
 CREATE TABLE IF NOT EXISTS alerts (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
   equipment_id INTEGER NOT NULL REFERENCES equipments(id) ON DELETE RESTRICT,
@@ -134,6 +148,7 @@ CREATE TABLE IF NOT EXISTS alerts (
   resolved_at TEXT
 );
 
+-- RN08: no máximo um alerta ativo ou suspenso por equipamento e tipo de anomalia.
 CREATE UNIQUE INDEX IF NOT EXISTS idx_alerts_active_equipment_type
   ON alerts(equipment_id, anomaly_type)
   WHERE status IN ('Ativo', 'Suspenso');
@@ -141,6 +156,7 @@ CREATE UNIQUE INDEX IF NOT EXISTS idx_alerts_active_equipment_type
 CREATE INDEX IF NOT EXISTS idx_alerts_filters
   ON alerts(status, severity, region_id, equipment_id);
 
+-- 8. Tabela de Ocorrências Cidadãs (RF12, RF13, RF15, RN10, RN13–RN15, RN22, RN23, RN26, RN29, RNF07)
 CREATE TABLE IF NOT EXISTS occurrences (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
   protocol TEXT NOT NULL UNIQUE CHECK (length(trim(protocol)) >= 10),
@@ -189,6 +205,7 @@ CREATE INDEX IF NOT EXISTS idx_occurrences_protocol
 CREATE INDEX IF NOT EXISTS idx_occurrences_region_id
   ON occurrences(region_id);
 
+-- 9. Tabela de Ordens de Serviço (RF09–RF11, RF15, RF18, RN09–RN12, RN14, RN18, RN19, RN21, RN25)
 CREATE TABLE IF NOT EXISTS work_orders (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
   code TEXT NOT NULL UNIQUE,
@@ -225,6 +242,7 @@ CREATE TABLE IF NOT EXISTS work_orders (
   )
 );
 
+-- RN19: um alerta ativo possui no máximo uma OS Aberta, Atribuída ou Em atendimento.
 CREATE UNIQUE INDEX IF NOT EXISTS idx_work_orders_active_alert
   ON work_orders(alert_id)
   WHERE alert_id IS NOT NULL
@@ -234,6 +252,7 @@ CREATE INDEX IF NOT EXISTS idx_work_orders_status ON work_orders(status);
 CREATE INDEX IF NOT EXISTS idx_work_orders_technician
   ON work_orders(assigned_technician_id);
 
+-- 10. Tabela de Registros de Auditoria (RNF05, RNF16, RN14, RN16, RN20)
 CREATE TABLE IF NOT EXISTS audit_logs (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
   actor_user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE RESTRICT,
@@ -252,6 +271,7 @@ CREATE INDEX IF NOT EXISTS idx_audit_logs_action ON audit_logs(action);
 CREATE INDEX IF NOT EXISTS idx_audit_logs_created_at
   ON audit_logs(created_at);
 
+-- 11. Triggers de Imutabilidade e Preservação de Histórico (RN14, RNF02, RNF16)
 CREATE TRIGGER IF NOT EXISTS prevent_audit_log_update
 BEFORE UPDATE ON audit_logs
 BEGIN
