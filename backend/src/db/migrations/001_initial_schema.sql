@@ -236,12 +236,14 @@ CREATE INDEX IF NOT EXISTS idx_work_orders_technician
 
 CREATE TABLE IF NOT EXISTS audit_logs (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
-  actor_user_id INTEGER REFERENCES users(id) ON DELETE RESTRICT,
+  actor_user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE RESTRICT,
   actor_role TEXT,
   action TEXT NOT NULL,
   target_type TEXT NOT NULL,
   target_id TEXT,
   reason TEXT,
+  previous_value TEXT,
+  new_value TEXT,
   details TEXT,
   created_at TEXT NOT NULL
 );
@@ -249,6 +251,18 @@ CREATE TABLE IF NOT EXISTS audit_logs (
 CREATE INDEX IF NOT EXISTS idx_audit_logs_action ON audit_logs(action);
 CREATE INDEX IF NOT EXISTS idx_audit_logs_created_at
   ON audit_logs(created_at);
+
+CREATE TRIGGER IF NOT EXISTS prevent_audit_log_update
+BEFORE UPDATE ON audit_logs
+BEGIN
+  SELECT RAISE(ABORT, 'Registros de auditoria não podem ser alterados.');
+END;
+
+CREATE TRIGGER IF NOT EXISTS prevent_audit_log_delete
+BEFORE DELETE ON audit_logs
+BEGIN
+  SELECT RAISE(ABORT, 'Registros de auditoria não podem ser excluídos.');
+END;
 
 CREATE TRIGGER IF NOT EXISTS prevent_alert_delete
 BEFORE DELETE ON alerts
