@@ -1,5 +1,17 @@
+/**
+ * Massa sintética de referência para ambiente de teste do SGE-Urbano.
+ *
+ * Rastreabilidade:
+ * - RN02 (equipamento vinculado a uma região e tipo poste ou predio_municipal)
+ * - RN03 (consumo esperado > 0), RN28 (vetores com E = 100 kWh), RN29 (coordenadas simuladas fixas)
+ * - RNF17 (dados exclusivamente simulados), RNF20 (massa fixa de teste)
+ * - Volume de referência: 2 regiões ativas e 20 equipamentos (15 postes e 5 prédios municipais)
+ * - CT04, CT05, CT06, CT24, CT26
+ */
+
 const FIXED_TIMESTAMP = '2026-11-18T12:00:00.000Z';
 
+// 1. Regiões sintéticas de referência (RF03, RN29)
 const REGIONS = Object.freeze([
   {
     id: 1,
@@ -15,6 +27,7 @@ const REGIONS = Object.freeze([
   },
 ]);
 
+// 2. Postes públicos sintéticos (15 unidades distribuídas entre as 2 regiões; inclui E = 100 kWh para CT05/CT06)
 const POLE_LOCATIONS = Object.freeze([
   ['Praça Municipal', -12.9710, -38.5010, 100],
   ['Rua Chile, ponto 1', -12.9712, -38.5012, 100],
@@ -33,6 +46,7 @@ const POLE_LOCATIONS = Object.freeze([
   ['Armação, ponto 2', -13.0100, -38.4670, 100],
 ]);
 
+// 3. Prédios municipais sintéticos (5 unidades distribuídas entre as 2 regiões)
 const MUNICIPAL_BUILDING_LOCATIONS = Object.freeze([
   ['Escola Municipal Centro', -12.9705, -38.5005, 1, 500],
   ['Unidade de Saúde Centro', -12.9735, -38.5040, 1, 650],
@@ -41,6 +55,7 @@ const MUNICIPAL_BUILDING_LOCATIONS = Object.freeze([
   ['Biblioteca Municipal Orla', -13.0080, -38.4650, 2, 450],
 ]);
 
+// 4. Consolidação dos 20 equipamentos ativos (RN02, RN03, RN29)
 const EQUIPMENTS = Object.freeze([
   ...POLE_LOCATIONS.map(
     ([location, latitude, longitude, expectedConsumption], index) => ({

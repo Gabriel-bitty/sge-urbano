@@ -2,6 +2,23 @@ const fs = require('node:fs');
 const path = require('node:path');
 const { DatabaseSync } = require('node:sqlite');
 
+/**
+ * Infraestrutura de conexão SQLite nativa (`node:sqlite`).
+ *
+ * Rastreabilidade:
+ * - RN14, RN30 (persistência em SQLite sem ORM)
+ * - RNF02 (integridade e persistência), RNF18 (isolamento de camadas)
+ * - CT17, CT26
+ */
+
+/**
+ * Executa uma operação atômica dentro de uma transação SQLite imediata.
+ *
+ * @template T
+ * @param {import('node:sqlite').DatabaseSync} database
+ * @param {() => T} operation
+ * @returns {T}
+ */
 function runInTransaction(database, operation) {
   database.exec('BEGIN IMMEDIATE TRANSACTION;');
 
@@ -15,6 +32,13 @@ function runInTransaction(database, operation) {
   }
 }
 
+/**
+ * Abre a conexão SQLite para o caminho informado ou ambiente atual,
+ * garantindo ativação obrigatória de chaves estrangeiras e busy_timeout (RNF02).
+ *
+ * @param {string} [filename]
+ * @returns {import('node:sqlite').DatabaseSync}
+ */
 function openDatabase(filename) {
   const databasePath = filename || (
     process.env.NODE_ENV === 'test'

@@ -6,6 +6,19 @@ const {
   REGIONS,
 } = require('./seeds/referenceSeedData');
 
+/**
+ * Carga sintética, parametrizada e idempotente para ambiente de teste.
+ *
+ * Rastreabilidade:
+ * - RF03, RF04, RF05; UC04; CA05.1–CA05.3
+ * - RN02, RN03, RN04, RN05, RN24 (2 regiões, 15 postes e 5 prédios municipais)
+ * - RNF02, RNF17 (dados simulados), RNF19 (SQL parametrizado), RNF20 (exclusivo NODE_ENV=test)
+ * - CT04, CT17, CT24, CT26
+ */
+
+/**
+ * Garante que a seed seja executada somente em ambiente de teste (RNF20, CT26).
+ */
 function assertTestEnvironment() {
   if (process.env.NODE_ENV !== 'test') {
     throw new Error(
@@ -14,6 +27,11 @@ function assertTestEnvironment() {
   }
 }
 
+/**
+ * Insere ou atualiza de forma idempotente a massa sintética usando SQL parametrizado (RNF19).
+ *
+ * @param {import('node:sqlite').DatabaseSync} database
+ */
 function insertReferenceSeed(database) {
   const insertRegion = database.prepare(`
     INSERT INTO regions (
@@ -69,6 +87,12 @@ function insertReferenceSeed(database) {
   }
 }
 
+/**
+ * Aplica migrações pendentes e carrega a massa sintética em transação (RNF02, RNF20).
+ *
+ * @param {import('node:sqlite').DatabaseSync | null} [customDatabase]
+ * @returns {{ regions: number, equipments: number, poles: number, municipalBuildings: number }}
+ */
 function seedDatabase(customDatabase = null) {
   assertTestEnvironment();
   const database = customDatabase || openDatabase();

@@ -4,6 +4,18 @@ const { runInTransaction } = require('./connection');
 
 const migrationsDirectory = path.join(__dirname, 'migrations');
 
+/**
+ * Executa em ordem alfabética as migrações SQL pendentes de forma transacional,
+ * registrando cada versão aplicada em `schema_migrations`.
+ *
+ * Rastreabilidade:
+ * - RNF02 (confiabilidade e integridade estrutural após reinício)
+ * - RNF18 (DDL restrita à infraestrutura de banco)
+ * - CT17, CT26
+ *
+ * @param {import('node:sqlite').DatabaseSync} database
+ * @returns {string[]} Lista das migrações aplicadas nesta execução
+ */
 function runMigrations(database) {
   database.exec(`
     CREATE TABLE IF NOT EXISTS schema_migrations (
