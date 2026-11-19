@@ -6,8 +6,8 @@ const { DatabaseSync } = require('node:sqlite');
  * Infraestrutura de conexão SQLite nativa (`node:sqlite`).
  *
  * Rastreabilidade:
- * - RN14, RN30 (persistência em SQLite sem ORM)
- * - RNF02 (integridade e persistência), RNF18 (isolamento de camadas)
+ * - RNF02 (integridade e persistência), RN30 (SQLite sem ORM)
+ * - RNF18 (isolamento de camadas)
  * - CT17, CT26
  */
 

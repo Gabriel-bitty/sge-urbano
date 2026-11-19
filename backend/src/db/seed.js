@@ -7,14 +7,38 @@ const {
 } = require('./seeds/referenceSeedData');
 
 /**
- * Carga sintética, parametrizada e idempotente para ambiente de teste.
+ * Carga sintética, parametrizada e reprodutível para ambiente de teste.
  *
  * Rastreabilidade:
  * - RF03, RF04, RF05; UC04; CA05.1–CA05.3
- * - RN02, RN03, RN04, RN05, RN24 (2 regiões, 15 postes e 5 prédios municipais)
+ * - RN02, RN03, RN04, RN05
+ * - Volume de referência: 2 regiões, 15 postes e 5 prédios municipais
+ *   (Seção 7.5 da 1ª entrega / Seção 2.2 da 2ª entrega)
  * - RNF02, RNF17 (dados simulados), RNF19 (SQL parametrizado), RNF20 (exclusivo NODE_ENV=test)
  * - CT04, CT17, CT24, CT26
  */
+
+const RESETTABLES = Object.freeze([
+  'work_orders',
+  'audit_logs',
+  'sessions',
+  'alerts',
+  'occurrences',
+  'readings',
+  'users',
+  'equipments',
+  'regions',
+  'anomaly_parameters',
+]);
+
+const ANOMALY_PARAMETERS = Object.freeze([
+  ['LIM_SUP', 10],
+  ['LIM_INF', 10],
+  ['TOL_ZERO', 0.5],
+  ['FAIXA_BAIXA', 10],
+  ['FAIXA_MEDIA', 20],
+  ['FAIXA_ALTA', 50],
+]);
 
 /**
  * Garante que a seed seja executada somente em ambiente de teste (RNF20, CT26).
@@ -28,21 +52,58 @@ function assertTestEnvironment() {
 }
 
 /**
- * Insere ou atualiza de forma idempotente a massa sintética usando SQL parametrizado (RNF19).
+ * Remove residual de execuções anteriores e preserva os gatilhos ao restaurá-los
+ * dentro da mesma transação.
+ *
+ * @param {import('node:sqlite').DatabaseSync} database
+ */
+function clearTestData(database) {
+  const triggers = database.prepare(`
+    SELECT name, sql
+    FROM sqlite_master
+    WHERE type = 'trigger' AND sql IS NOT NULL
+  `).all();
+
+  for (const trigger of triggers) {
+    const escapedName = trigger.name.replaceAll('"', '""');
+    database.exec(`DROP TRIGGER "${escapedName}";`);
+  }
+
+  for (const table of RESETTABLES) {
+    database.exec(`DELETE FROM ${table};`);
+  }
+
+  const clearSequence = database.prepare(
+    'DELETE FROM sqlite_sequence WHERE name = ?'
+  );
+
+  for (const table of RESETTABLES) {
+    clearSequence.run(table);
+  }
+
+  for (const trigger of triggers) {
+    database.exec(trigger.sql);
+  }
+}
+
+/**
+ * Insere a massa sintética usando SQL parametrizado (RNF19).
  *
  * @param {import('node:sqlite').DatabaseSync} database
  */
 function insertReferenceSeed(database) {
+  const insertParameter = database.prepare(`
+    INSERT INTO anomaly_parameters (name, value) VALUES (?, ?)
+  `);
+
+  for (const [name, value] of ANOMALY_PARAMETERS) {
+    insertParameter.run(name, value);
+  }
+
   const insertRegion = database.prepare(`
     INSERT INTO regions (
       id, name, latitude, longitude, status, created_at, updated_at
     ) VALUES (?, ?, ?, ?, 'Ativo', ?, ?)
-    ON CONFLICT(id) DO UPDATE SET
-      name = excluded.name,
-      latitude = excluded.latitude,
-      longitude = excluded.longitude,
-      status = excluded.status,
-      updated_at = excluded.updated_at
   `);
 
   for (const region of REGIONS) {
@@ -61,15 +122,6 @@ function insertReferenceSeed(database) {
       id, region_id, type, location, expected_consumption_kwh,
       latitude, longitude, status, created_at, updated_at
     ) VALUES (?, ?, ?, ?, ?, ?, ?, 'Ativo', ?, ?)
-    ON CONFLICT(id) DO UPDATE SET
-      region_id = excluded.region_id,
-      type = excluded.type,
-      location = excluded.location,
-      expected_consumption_kwh = excluded.expected_consumption_kwh,
-      latitude = excluded.latitude,
-      longitude = excluded.longitude,
-      status = excluded.status,
-      updated_at = excluded.updated_at
   `);
 
   for (const equipment of EQUIPMENTS) {
@@ -88,7 +140,18 @@ function insertReferenceSeed(database) {
 }
 
 /**
- * Aplica migrações pendentes e carrega a massa sintética em transação (RNF02, RNF20).
+ * Recria o estado inicial completo antes de carregar a massa de referência.
+ *
+ * @param {import('node:sqlite').DatabaseSync} database
+ */
+function resetAndInsertReferenceSeed(database) {
+  clearTestData(database);
+  insertReferenceSeed(database);
+}
+
+/**
+ * Aplica migrações pendentes e recria a massa sintética em transação
+ * (Seção 2.2 / Seção 7.5, RNF02, RNF20).
  *
  * @param {import('node:sqlite').DatabaseSync | null} [customDatabase]
  * @returns {{ regions: number, equipments: number, poles: number, municipalBuildings: number }}
@@ -100,15 +163,21 @@ function seedDatabase(customDatabase = null) {
 
   try {
     runMigrations(database);
-    runInTransaction(database, () => insertReferenceSeed(database));
+    runInTransaction(database, () => resetAndInsertReferenceSeed(database));
 
     return {
-      regions: REGIONS.length,
-      equipments: EQUIPMENTS.length,
-      poles: EQUIPMENTS.filter(({ type }) => type === 'poste').length,
-      municipalBuildings: EQUIPMENTS.filter(
-        ({ type }) => type === 'predio_municipal'
-      ).length,
+      regions: database.prepare(
+        'SELECT COUNT(*) AS total FROM regions'
+      ).get().total,
+      equipments: database.prepare(
+        'SELECT COUNT(*) AS total FROM equipments'
+      ).get().total,
+      poles: database.prepare(
+        "SELECT COUNT(*) AS total FROM equipments WHERE type = 'poste'"
+      ).get().total,
+      municipalBuildings: database.prepare(
+        "SELECT COUNT(*) AS total FROM equipments WHERE type = 'predio_municipal'"
+      ).get().total,
     };
   } finally {
     if (ownsDatabase) {
