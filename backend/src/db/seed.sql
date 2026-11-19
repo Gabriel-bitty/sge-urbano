@@ -1,1 +1,0 @@
--- As sementes serão definidas junto com o schema na próxima etapa.
