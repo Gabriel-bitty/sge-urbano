@@ -28,7 +28,7 @@ function createSimulationRouter({
   const managerOnly = [authenticate, requireRole('Gestor')];
 
   router.post('/', ...managerOnly, (req, res) => {
-    const batch = simulationService.generate(req.body);
+    const batch = simulationService.generate(req.body, req.user);
 
     return res.status(201).json({
       batchId: batch.batchId,

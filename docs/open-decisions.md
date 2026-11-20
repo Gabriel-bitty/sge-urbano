@@ -43,9 +43,18 @@ As escolhas abaixo estão implementadas e formalizadas nos handoffs das Etapas
 Esses contratos precisam permanecer sincronizados com
 `docs/architecture/api-contracts.md`.
 
-iência, persistência e hardening da API pertencem à responsabilidade de QA. | Tiago |
+## 3. Pendências externas ou sem retenção definida
 
-## 3. Regras de governança
+| Pendência | Situação | Responsável/evidência |
+|---|---|---|
+| RNF03: retenção persistente do log | O backend emite em `stderr` um registro JSON com `level`, `operation`, `correlationId`, `batchId`, `scenario`, `actorUserId`, `occurredAt` e `message`. A falha controlada é exclusiva de teste, executa rollback e preserva lotes anteriores. Política de retenção persistente continua dependente de decisão/infraestrutura. | Tiago para evidência oficial |
+| RNF11: dashboard em até 3 segundos | A implementação existe; a medição formal ainda depende de CT15. | Tiago |
+| RNF08, RNF09, RNF10 e RNF17 | Contagem de interações, cor/texto, idioma visual e aviso permanente dependem do frontend. | João/Tiago |
+| RNF15 | Compatibilidade em Chrome, Firefox e Edge atuais. | Tiago |
+| RNF14 e CT25 | Histórico de contribuição da equipe. | Gabriel/equipe |
+| 11.2–11.3 | Resiliência persistente, reinício e hardening continuam sob responsabilidade de QA. | Tiago |
+
+## 4. Regras de governança
 
 1. Os PDFs de 1ª e 2ª entrega continuam sendo as fontes normativas.
 2. Uma decisão registrada só prevalece quando responde explicitamente a uma

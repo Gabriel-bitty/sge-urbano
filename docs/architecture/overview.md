@@ -144,6 +144,10 @@ As leituras são geradas em lote pelos cenários `normal`, `pico` e `falha`:
 - `pico`: `E × 1,5`;
 - `falha`: medido igual a zero.
 
+Em `NODE_ENV=test`, o corpo pode incluir `injectError: true`. O gerador registra
+um erro estruturado, aborta a transação e preserva os dados persistidos em
+lotes anteriores. O campo é recusado fora do ambiente de teste.
+
 Todas são persistidas com:
 
 - `origin = "SIMULADO"`;

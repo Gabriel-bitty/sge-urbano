@@ -215,7 +215,8 @@ Exclusivo `Gestor`. Corpo:
 
 ```json
 {
-  "scenario": "normal"
+  "scenario": "normal",
+  "injectError": false
 }
 ```
 
@@ -224,6 +225,20 @@ Valores de `scenario`:
 - `normal`: consumo esperado;
 - `pico`: `E × 1,5`;
 - `falha`: zero.
+
+`injectError` é opcional e só pode ser enviado em `NODE_ENV=test`. Quando
+`injectError: true`, a API:
+
+1. inicia a transação;
+2. processa uma leitura/alerta quando houver equipamento elegível;
+3. registra no log técnico estruturado do processo uma entrada `ERROR` com
+   `operation`, `correlationId`, `batchId`, `scenario`, `actorUserId`,
+   `occurredAt` e `message`;
+4. lança a falha, executa rollback e retorna `500`.
+
+Leituras e alertas criados nessa tentativa não permanecem, enquanto os dados de
+lotes anteriores continuam disponíveis. Fora do ambiente de teste,
+`injectError` é recusado com `400` e não há efeito no gerador.
 
 Somente regiões/equipamentos ativos participam. Sucesso `201`:
 

@@ -22,7 +22,7 @@ originais e não declara teste executado sem evidência real.
 | RF02 | `authentication.js`, `authorization.js`, filtros por perfil em OS/mapa | RN01, RN15; UC01; CA02.1–02.2 | CT01, CT10 | Implementado. |
 | RF03 | `regionRoutes.js`, `regionService.js` | RN04, RN20; UC02; CA03.1–03.3 | CT02 | Implementado, incluindo cascata auditada. |
 | RF04 | `equipmentRoutes.js`, `equipmentService.js` | RN02–RN04; UC03; CA04.1–04.3 | CT03 | Implementado. |
-| RF05 | `simulationRoutes.js`, `simulationService.js`, `leituraRepository.js` | RN04–RN05, RN24; UC04; CA05.1–05.3 | CT04, CT24 | Implementado; falha controlada/RNF03 parcial. |
+| RF05 | `simulationRoutes.js`, `simulationService.js`, `leituraRepository.js`, `logRepository.js` | RN04–RN05, RN24; UC04; CA05.1–05.3 | CT04, CT24 | Implementado com falha controlada e rollback exclusivo de teste. |
 | RF06 | `rules/anomalia.js` | RN06, RN28; UC05; CA06.1–06.8 | CT05–CT06 | Implementado; cobertura oficial pendente. |
 | RF07 | `alertService.js`, `alertaRepository.js` | RN06–RN08; UC05; CA07.1–07.3 | CT05–CT07 | Implementado. |
 | RF08 | `alertRoutes.js`, `alertaRepository.js` | RN08; UC06; CA08.1–08.2 | CT08 | Implementado; apresentação visual pendente. |
@@ -43,7 +43,7 @@ originais e não declara teste executado sem evidência real.
 |---|---|---|---|
 | RNF01 | `rules/anomalia.js` é determinístico e puro. | CT05–CT06 | Implementado; cobertura oficial pendente. |
 | RNF02 | SQLite persistente; FKs e histórico de alertas/ocorrências/OS. | CT17 | Implementado; reinício oficial pendente. |
-| RNF03 | Erro deve preservar dados e ser registrado. Não há contrato definido de formato/destino de log. | CT04 | Parcial. |
+| RNF03 | `injectError` exclusivo de teste registra erro estruturado e força rollback; dados anteriores permanecem. | CT04 | Implementado no backend; execução oficial pendente. |
 | RNF04 | `passwordService.js`, `scrypt`, sal aleatório. | CT01 | Implementado. |
 | RNF05 | Autenticação e autorização server-side por rota. | CT01, CT10, CT18 | Implementado. |
 | RNF06 | Store SQLite e expiração de 30 minutos. | CT01 | Implementado. |
@@ -124,7 +124,7 @@ originais e não declara teste executado sem evidência real.
 |---|---|---|
 | CT01 | Smoke check técnico realizado em sessões/autorização. | Pendente Tiago. |
 | CT02–CT03 | Cadastro e cascata implementados. | Pendente Tiago. |
-| CT04 | Cenários implementados; RNF03 ainda sem contrato de log. | Pendente Tiago. |
+| CT04 | Cenários, falha controlada, log e rollback implementados. | Pendente Tiago. |
 | CT05–CT06 | Regra pura implementada; vetores previstos. | Pendente Tiago/nyc. |
 | CT07–CT08 | Atualização sem duplicação e filtros. | Pendente Tiago; UI no frontend. |
 | CT09–CT12 | OS e auditoria implementadas; smoke checks executados. | Pendente Tiago. |
