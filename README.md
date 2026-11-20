@@ -148,3 +148,12 @@ Os artefatos normativos da A3 estão em `docs/entrega-a3/`:
 
 As decisões, o pipeline e os handoffs de contrato das etapas são mantidos no
 repositório de documentação do projeto.
+
+### Documentação técnica do backend
+
+- [Visão geral da arquitetura](docs/architecture/overview.md)
+- [Contratos da API REST](docs/architecture/api-contracts.md)
+- [Diagrama entidade-relacionamento](docs/architecture/database-er-diagram.md)
+- [Dicionário de dados](docs/architecture/data-dictionary.md)
+- [Decisões e pendências](docs/open-decisions.md)
+- [Matriz de rastreabilidade](docs/requirements-traceability.md)
