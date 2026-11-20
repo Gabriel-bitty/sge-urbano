@@ -183,7 +183,17 @@ function createReportService({
     const body = report.rows.map((row) => header.map(
       (field) => csvCell(row[field])
     ).join(','));
-    return [header.join(','), ...body].join('\r\n');
+    const total = {
+      groupBy: report.groupBy,
+      groupValue: 'TOTAL',
+      groupLabel: 'TOTAL',
+      period: '',
+      readingCount: report.totals.readingCount,
+      measuredConsumptionKwh: report.totals.measuredConsumptionKwh,
+      expectedConsumptionKwh: report.totals.expectedConsumptionKwh,
+    };
+    const totalRow = header.map((field) => csvCell(total[field])).join(',');
+    return [header.join(','), ...body, totalRow].join('\r\n');
   }
 
   return { get, toCsv };
