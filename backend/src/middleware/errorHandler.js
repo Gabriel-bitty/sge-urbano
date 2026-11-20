@@ -1,4 +1,8 @@
-const { NotFoundError, ValidationError } = require('../services/domainErrors');
+const {
+  ForbiddenError,
+  NotFoundError,
+  ValidationError,
+} = require('../services/domainErrors');
 
 function errorHandler(error, _req, res, next) {
   if (res.headersSent) {
@@ -16,6 +20,13 @@ function errorHandler(error, _req, res, next) {
   if (error instanceof NotFoundError) {
     return res.status(404).json({
       error: 'NOT_FOUND',
+      message: error.message,
+    });
+  }
+
+  if (error instanceof ForbiddenError) {
+    return res.status(403).json({
+      error: 'FORBIDDEN',
       message: error.message,
     });
   }

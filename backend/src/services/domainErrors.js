@@ -13,7 +13,15 @@ class NotFoundError extends Error {
   }
 }
 
+class ForbiddenError extends Error {
+  constructor(message = 'Acesso negado para esta operação.') {
+    super(message);
+    this.name = 'ForbiddenError';
+  }
+}
+
 module.exports = {
+  ForbiddenError,
   NotFoundError,
   ValidationError,
 };

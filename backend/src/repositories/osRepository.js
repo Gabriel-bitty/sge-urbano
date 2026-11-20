@@ -51,6 +51,17 @@ function createOsRepository(database) {
     `).get(alertId);
   }
 
+  function nextCode(year) {
+    const prefix = `OS-${year}-`;
+    const current = db.prepare(`
+      SELECT MAX(CAST(substr(code, length(?) + 1) AS INTEGER)) AS last_sequence
+      FROM work_orders
+      WHERE code LIKE ?
+    `).get(prefix, `${prefix}%`);
+    const sequence = (current.last_sequence || 0) + 1;
+    return `${prefix}${String(sequence).padStart(6, '0')}`;
+  }
+
   function list(filters = {}) {
     const clauses = [];
     const parameters = [];
@@ -114,6 +125,7 @@ function createOsRepository(database) {
     findActiveByAlertId,
     findById,
     list,
+    nextCode,
     update,
   };
 }
