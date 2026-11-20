@@ -1,3 +1,4 @@
+/** Persistência imutável e consulta de eventos de auditoria (RNF16, CT01, CT11, CT12, CT19, CT20). */
 const {
   appendFilter,
   insertAndSelect,

@@ -1,3 +1,4 @@
+/** Persistência e agregação de alertas sem exclusão histórica (RF07, RF08, RN14). */
 const {
   appendFilter,
   insertAndSelect,

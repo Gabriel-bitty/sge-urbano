@@ -1,3 +1,4 @@
+/** Rotas autorizadas do ciclo de vida de OS (RF09–RF11, RF18, CT09–CT12). */
 const { Router } = require('express');
 
 function toWorkOrderResponse(workOrder) {

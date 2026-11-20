@@ -1,3 +1,4 @@
+/** Rotas públicas de ocorrência e consulta privada por protocolo (RF12, RF13, CT13, CT14). */
 const { Router } = require('express');
 
 function toOccurrenceCreatedResponse(occurrence) {

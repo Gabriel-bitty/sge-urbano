@@ -1,3 +1,4 @@
+/** Persistência parametrizada de usuários autenticáveis (RF01, RN01, RNF04). */
 const {
   appendFilter,
   insertAndSelect,

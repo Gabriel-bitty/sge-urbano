@@ -1,3 +1,4 @@
+/** SQL parametrizado de equipamentos vinculados a regiões (RF04, RN02–RN04, RNF19). */
 const {
   appendFilter,
   insertAndSelect,

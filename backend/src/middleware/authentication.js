@@ -1,3 +1,4 @@
+/** Valida sessão server-side e audita acessos sem autenticação (RNF05, RNF06, RNF16, CT01). */
 const { SESSION_COOKIE_NAME } = require('../services/sqliteSessionStore');
 
 function createAuthenticationMiddleware({ userRepository, auditService }) {

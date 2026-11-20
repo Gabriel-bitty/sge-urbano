@@ -1,3 +1,4 @@
+/** Rota de reset/seed exclusiva de NODE_ENV=test (RNF20, CT26). */
 const { Router } = require('express');
 const { seedDatabase } = require('../db/seed');
 const { ValidationError } = require('../services/domainErrors');

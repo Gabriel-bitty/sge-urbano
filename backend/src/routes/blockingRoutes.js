@@ -1,3 +1,4 @@
+/** Rotas de bloqueio e desbloqueio auditados (RF17, RN16, RNF16, CT18–CT20). */
 const { Router } = require('express');
 
 function toBlockedTargetResponse(target, targetType) {

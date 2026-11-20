@@ -1,3 +1,4 @@
+/** Aplica perfis no servidor e registra acessos negados (RF02, RN01, RNF05, RNF16). */
 function createAuthorizationMiddleware(auditService) {
   if (!auditService || typeof auditService.record !== 'function') {
     throw new TypeError('Um serviço de auditoria válido é obrigatório.');

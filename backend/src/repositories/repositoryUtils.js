@@ -1,3 +1,4 @@
+/** Utilitários parametrizados compartilhados pelos repositórios (RNF18, RNF19). */
 function requireDatabase(database) {
   if (!database || typeof database.prepare !== 'function') {
     throw new TypeError('Uma conexão SQLite válida é obrigatória.');

@@ -1,3 +1,4 @@
+/** Rotas de autenticação e sessão (RF01, RNF05, RNF06, RNF16, CT01). */
 const { Router } = require('express');
 const { asyncHandler } = require('../middleware/asyncHandler');
 const { SESSION_COOKIE_NAME } = require('../services/sqliteSessionStore');

@@ -1,3 +1,4 @@
+/** Rotas de relatório JSON e CSV (RF16, CA16.1–CA16.3, CT16). */
 const { Router } = require('express');
 
 function createReportRouter({

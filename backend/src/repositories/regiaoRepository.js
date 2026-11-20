@@ -1,3 +1,4 @@
+/** SQL parametrizado de regiões e histórico de bloqueio (RF03, RN20, RNF19). */
 const {
   appendFilter,
   insertAndSelect,

@@ -1,3 +1,4 @@
+/** Rotas protegidas de gestão de regiões (RF02, RF03, RN20, CT02). */
 const { Router } = require('express');
 
 function toRegionResponse(region) {

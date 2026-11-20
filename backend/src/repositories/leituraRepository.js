@@ -1,3 +1,4 @@
+/** SQL de leituras e agregações de consumo (RF05, RF14, RF16, RN24, CT04). */
 const {
   appendFilter,
   insertAndSelect,
