@@ -53,19 +53,31 @@ function createAlertaRepository(database) {
   function list(filters = {}) {
     const clauses = [];
     const parameters = [];
-    appendFilter(clauses, parameters, 'status = ?', filters.status);
-    appendFilter(clauses, parameters, 'severity = ?', filters.severity);
-    appendFilter(clauses, parameters, 'region_id = ?', filters.regionId);
-    appendFilter(clauses, parameters, 'equipment_id = ?', filters.equipmentId);
-    appendFilter(clauses, parameters, 'anomaly_type = ?', filters.anomalyType);
-    appendFilter(clauses, parameters, 'updated_at >= ?', filters.from);
-    appendFilter(clauses, parameters, 'updated_at <= ?', filters.to);
+    appendFilter(clauses, parameters, 'alerts.status = ?', filters.status);
+    appendFilter(clauses, parameters, 'alerts.severity = ?', filters.severity);
+    appendFilter(clauses, parameters, 'alerts.region_id = ?', filters.regionId);
+    appendFilter(
+      clauses,
+      parameters,
+      'alerts.equipment_id = ?',
+      filters.equipmentId
+    );
+    appendFilter(
+      clauses,
+      parameters,
+      'alerts.anomaly_type = ?',
+      filters.anomalyType
+    );
+    appendFilter(clauses, parameters, 'alerts.updated_at >= ?', filters.from);
+    appendFilter(clauses, parameters, 'alerts.updated_at <= ?', filters.to);
+    appendFilter(clauses, parameters, 'equipments.type = ?', filters.equipmentType);
 
     return db.prepare(`
-      SELECT *
+      SELECT alerts.*, equipments.type AS equipment_type
       FROM alerts
+      JOIN equipments ON equipments.id = alerts.equipment_id
       ${whereClause(clauses)}
-      ORDER BY updated_at DESC, id DESC
+      ORDER BY alerts.updated_at DESC, alerts.id DESC
     `).all(...parameters);
   }
 
@@ -87,17 +99,24 @@ function createAlertaRepository(database) {
   function aggregateByStatus(filters = {}) {
     const clauses = [];
     const parameters = [];
-    appendFilter(clauses, parameters, 'region_id = ?', filters.regionId);
-    appendFilter(clauses, parameters, 'equipment_id = ?', filters.equipmentId);
-    appendFilter(clauses, parameters, 'updated_at >= ?', filters.from);
-    appendFilter(clauses, parameters, 'updated_at <= ?', filters.to);
+    appendFilter(clauses, parameters, 'alerts.region_id = ?', filters.regionId);
+    appendFilter(
+      clauses,
+      parameters,
+      'alerts.equipment_id = ?',
+      filters.equipmentId
+    );
+    appendFilter(clauses, parameters, 'alerts.updated_at >= ?', filters.from);
+    appendFilter(clauses, parameters, 'alerts.updated_at <= ?', filters.to);
+    appendFilter(clauses, parameters, 'equipments.type = ?', filters.equipmentType);
 
     return db.prepare(`
-      SELECT status, severity, COUNT(*) AS total
+      SELECT alerts.status, alerts.severity, COUNT(*) AS total
       FROM alerts
+      JOIN equipments ON equipments.id = alerts.equipment_id
       ${whereClause(clauses)}
-      GROUP BY status, severity
-      ORDER BY status, severity
+      GROUP BY alerts.status, alerts.severity
+      ORDER BY alerts.status, alerts.severity
     `).all(...parameters);
   }
 

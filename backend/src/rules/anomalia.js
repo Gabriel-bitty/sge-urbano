@@ -6,6 +6,7 @@ const PARAMETER_NAMES = Object.freeze([
   'FAIXA_MEDIA',
   'FAIXA_ALTA',
 ]);
+const DEVIATION_PRECISION = 1e6;
 
 function assertFiniteNumber(value, field) {
   if (typeof value !== 'number' || !Number.isFinite(value)) {
@@ -50,11 +51,14 @@ function calculateDeviationPercent(measuredConsumptionKwh, expectedConsumptionKw
     throw new RangeError('O consumo esperado deve ser maior que zero.');
   }
 
-  return (
+  const deviationPercent = (
     ((measuredConsumptionKwh - expectedConsumptionKwh)
       / expectedConsumptionKwh)
     * 100
   );
+
+  return Math.round(deviationPercent * DEVIATION_PRECISION)
+    / DEVIATION_PRECISION;
 }
 
 function classifySeverity(anomalyType, deviationPercent, parameters) {
