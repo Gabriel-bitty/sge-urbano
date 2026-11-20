@@ -65,25 +65,57 @@ function createOsRepository(database) {
   function list(filters = {}) {
     const clauses = [];
     const parameters = [];
-    appendFilter(clauses, parameters, 'status = ?', filters.status);
-    appendFilter(clauses, parameters, 'region_id = ?', filters.regionId);
-    appendFilter(clauses, parameters, 'equipment_id = ?', filters.equipmentId);
+    appendFilter(clauses, parameters, 'work_orders.status = ?', filters.status);
     appendFilter(
       clauses,
       parameters,
-      'assigned_technician_id = ?',
+      'work_orders.region_id = ?',
+      filters.regionId
+    );
+    appendFilter(
+      clauses,
+      parameters,
+      'work_orders.equipment_id = ?',
+      filters.equipmentId
+    );
+    appendFilter(
+      clauses,
+      parameters,
+      'work_orders.assigned_technician_id = ?',
       filters.assignedTechnicianId
     );
-    appendFilter(clauses, parameters, 'alert_id = ?', filters.alertId);
-    appendFilter(clauses, parameters, 'occurrence_id = ?', filters.occurrenceId);
-    appendFilter(clauses, parameters, 'updated_at >= ?', filters.from);
-    appendFilter(clauses, parameters, 'updated_at <= ?', filters.to);
+    appendFilter(
+      clauses,
+      parameters,
+      'work_orders.alert_id = ?',
+      filters.alertId
+    );
+    appendFilter(
+      clauses,
+      parameters,
+      'work_orders.occurrence_id = ?',
+      filters.occurrenceId
+    );
+    appendFilter(
+      clauses,
+      parameters,
+      'work_orders.updated_at >= ?',
+      filters.from
+    );
+    appendFilter(
+      clauses,
+      parameters,
+      'work_orders.updated_at <= ?',
+      filters.to
+    );
+    appendFilter(clauses, parameters, 'equipments.type = ?', filters.equipmentType);
 
     return db.prepare(`
-      SELECT *
+      SELECT work_orders.*
       FROM work_orders
+      LEFT JOIN equipments ON equipments.id = work_orders.equipment_id
       ${whereClause(clauses)}
-      ORDER BY updated_at DESC, id DESC
+      ORDER BY work_orders.updated_at DESC, work_orders.id DESC
     `).all(...parameters);
   }
 

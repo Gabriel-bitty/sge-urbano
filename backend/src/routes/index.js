@@ -13,18 +13,24 @@ const { createAuthorizationMiddleware } = require('../middleware/authorization')
 const { createAlertRouter } = require('./alertRoutes');
 const { createAuthRouter } = require('./authRoutes');
 const { createBlockingRouter } = require('./blockingRoutes');
+const { createDashboardRouter } = require('./dashboardRoutes');
 const { createEquipmentRouter } = require('./equipmentRoutes');
+const { createMapRouter } = require('./mapRoutes');
 const { createOccurrenceRouter } = require('./occurrenceRoutes');
 const { createRegionRouter } = require('./regionRoutes');
+const { createReportRouter } = require('./reportRoutes');
 const { createSimulationRouter } = require('./simulationRoutes');
 const { createWorkOrderRouter } = require('./workOrderRoutes');
 const { createAlertService } = require('../services/alertService');
 const { createAuditService } = require('../services/auditService');
 const { createAuthService } = require('../services/authService');
 const { createBlockingService } = require('../services/blockingService');
+const { createDashboardService } = require('../services/dashboardService');
 const { createEquipmentService } = require('../services/equipmentService');
+const { createMapService } = require('../services/mapService');
 const { createOccurrenceService } = require('../services/occurrenceService');
 const { createRegionService } = require('../services/regionService');
+const { createReportService } = require('../services/reportService');
 const { createSimulationService } = require('../services/simulationService');
 const { createWorkOrderService } = require('../services/workOrderService');
 
@@ -67,6 +73,23 @@ function createRoutes({ database }) {
     equipmentRepository,
     userRepository,
     auditService,
+  });
+  const dashboardService = createDashboardService({
+    equipmentRepository,
+    readingRepository,
+    alertRepository,
+    workOrderRepository,
+    regionRepository,
+  });
+  const reportService = createReportService({
+    readingRepository,
+    regionRepository,
+  });
+  const mapService = createMapService({
+    occurrenceRepository,
+    workOrderRepository,
+    equipmentRepository,
+    regionRepository,
   });
 
   router.use('/auth', createAuthRouter({
@@ -120,6 +143,20 @@ function createRoutes({ database }) {
     alertService,
     authenticate,
     requireRole,
+  }));
+  router.use('/dashboard', createDashboardRouter({
+    dashboardService,
+    authenticate,
+    requireRole,
+  }));
+  router.use('/', createReportRouter({
+    reportService,
+    authenticate,
+    requireRole,
+  }));
+  router.use('/map', createMapRouter({
+    mapService,
+    authenticate,
   }));
   router.use('/work-orders', createWorkOrderRouter({
     workOrderService,
