@@ -21,7 +21,7 @@ no eixo temático de ordem pública e manutenção da cidade.
 ## 2. Tecnologias
 
 | Camada | Tecnologia |
-|---|---|
+| --- | --- |
 | Back-end | Node.js `>=22.13.0` |
 | API REST | Express |
 | Banco de dados | `node:sqlite` |
@@ -69,7 +69,7 @@ Esse endpoint não é registrado fora de `NODE_ENV=test` (`RNF20`, CT26).
 ## 6. Contas sintéticas de teste
 
 | Perfil | Usuário |
-|---|---|
+| --- | --- |
 | Gestor | `gestor.teste` |
 | Técnico | `tecnico1.teste` |
 | Técnico | `tecnico2.teste` |
@@ -95,7 +95,7 @@ possui permissão.
 ## 8. Visão geral da API
 
 | Domínio | Rotas principais | Perfil |
-|---|---|---|
+| --- | --- | --- |
 | Regiões | `GET/POST /api/regions`, `GET/PATCH /api/regions/:id` | Gestor |
 | Equipamentos | `GET/POST /api/equipments`, `GET/PATCH /api/equipments/:id` | Gestor |
 | Bloqueio | `/api/regions/:id/block`, `/api/equipments/:id/block` e rotas `/unblock` | Gestor |
@@ -106,7 +106,6 @@ possui permissão.
 | Dashboard | `GET /api/dashboard` | Gestor |
 | Relatórios | `GET /api/reports`, `GET /api/reports.csv` | Gestor |
 | Mapa | `GET /api/map` | Gestor/Técnico |
-
 
 ## 9. Comandos de validação
 
