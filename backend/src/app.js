@@ -59,6 +59,10 @@ function createApp(options = {}) {
     },
   }));
   app.use('/api', createRoutes({ database }));
+  if (process.env.NODE_ENV === 'test') {
+    const { createTestSupportRouter } = require('./routes/testSupportRoutes');
+    app.use('/api/test', createTestSupportRouter({ database }));
+  }
   app.use('/api', notFoundHandler);
   app.use(express.static(path.join(__dirname, '..', '..', 'frontend')));
   app.use(errorHandler);
