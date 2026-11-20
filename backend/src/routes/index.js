@@ -1,15 +1,18 @@
 const { Router } = require('express');
 const { createAuditoriaRepository } = require('../repositories/auditoriaRepository');
+const { createAlertaRepository } = require('../repositories/alertaRepository');
 const { createEquipamentoRepository } = require('../repositories/equipamentoRepository');
 const { createRegiaoRepository } = require('../repositories/regiaoRepository');
 const { createUsuarioRepository } = require('../repositories/usuarioRepository');
 const { createAuthenticationMiddleware } = require('../middleware/authentication');
 const { createAuthorizationMiddleware } = require('../middleware/authorization');
 const { createAuthRouter } = require('./authRoutes');
+const { createBlockingRouter } = require('./blockingRoutes');
 const { createEquipmentRouter } = require('./equipmentRoutes');
 const { createRegionRouter } = require('./regionRoutes');
 const { createAuditService } = require('../services/auditService');
 const { createAuthService } = require('../services/authService');
+const { createBlockingService } = require('../services/blockingService');
 const { createEquipmentService } = require('../services/equipmentService');
 const { createRegionService } = require('../services/regionService');
 
