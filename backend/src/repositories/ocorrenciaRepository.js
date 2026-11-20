@@ -45,6 +45,14 @@ function createOcorrenciaRepository(database) {
     ).get(protocol);
   }
 
+  function findPublicByProtocol(protocol) {
+    return db.prepare(`
+      SELECT status, type
+      FROM occurrences
+      WHERE protocol = ?
+    `).get(protocol);
+  }
+
   function list(filters = {}) {
     const clauses = [];
     const parameters = [];
@@ -74,6 +82,7 @@ function createOcorrenciaRepository(database) {
     create,
     findById,
     findByProtocol,
+    findPublicByProtocol,
     list,
     updateStatus,
   };
