@@ -1,10 +1,35 @@
 const { openDatabase, runInTransaction } = require('./connection');
 const { runMigrations } = require('./migrate');
+const { hashPasswordSync } = require('../services/passwordService');
 const {
   EQUIPMENTS,
   FIXED_TIMESTAMP,
   REGIONS,
 } = require('./seeds/referenceSeedData');
+
+const TEST_USERS = Object.freeze([
+  {
+    id: 1,
+    name: 'Gestor de Teste',
+    username: 'gestor.teste',
+    role: 'Gestor',
+    password: 'TesteSGE!2026',
+  },
+  {
+    id: 2,
+    name: 'Técnico de Teste 1',
+    username: 'tecnico1.teste',
+    role: 'Técnico',
+    password: 'TesteSGE!2026',
+  },
+  {
+    id: 3,
+    name: 'Técnico de Teste 2',
+    username: 'tecnico2.teste',
+    role: 'Técnico',
+    password: 'TesteSGE!2026',
+  },
+]);
 
 /**
  * Carga sintética, parametrizada e reprodutível para ambiente de teste.
@@ -133,6 +158,24 @@ function insertReferenceSeed(database) {
       equipment.expected_consumption_kwh,
       equipment.latitude,
       equipment.longitude,
+      FIXED_TIMESTAMP,
+      FIXED_TIMESTAMP
+    );
+  }
+
+  const insertUser = database.prepare(`
+    INSERT INTO users (
+      id, name, username, password_hash, role, status, created_at, updated_at
+    ) VALUES (?, ?, ?, ?, ?, 'Ativo', ?, ?)
+  `);
+
+  for (const user of TEST_USERS) {
+    insertUser.run(
+      user.id,
+      user.name,
+      user.username,
+      hashPasswordSync(user.password),
+      user.role,
       FIXED_TIMESTAMP,
       FIXED_TIMESTAMP
     );

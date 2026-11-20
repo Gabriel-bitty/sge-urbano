@@ -11,11 +11,12 @@ function createAuditoriaRepository(database) {
   function create(event) {
     return insertAndSelect(db, 'audit_logs', `
       INSERT INTO audit_logs (
-        actor_user_id, actor_role, action, target_type, target_id, reason,
-        previous_value, new_value, details, created_at
-      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        actor_user_id, actor_identity, actor_role, action, target_type,
+        target_id, reason, previous_value, new_value, details, created_at
+      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     `, [
-      event.actorUserId,
+      event.actorUserId ?? null,
+      event.actorIdentity ?? null,
       event.actorRole ?? null,
       event.action,
       event.targetType,
