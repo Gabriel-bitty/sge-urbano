@@ -10,7 +10,11 @@ function createAuditService(auditRepository, clock = () => new Date()) {
     });
   }
 
-  return { record };
+  function list(filters) {
+    return auditRepository.list(filters);
+  }
+
+  return { list, record };
 }
 
 module.exports = { createAuditService };
