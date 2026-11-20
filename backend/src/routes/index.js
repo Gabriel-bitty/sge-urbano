@@ -3,6 +3,7 @@ const { createAuditoriaRepository } = require('../repositories/auditoriaReposito
 const { createAlertaRepository } = require('../repositories/alertaRepository');
 const { createEquipamentoRepository } = require('../repositories/equipamentoRepository');
 const { createLeituraRepository } = require('../repositories/leituraRepository');
+const { createLogRepository } = require('../repositories/logRepository');
 const { createOcorrenciaRepository } = require('../repositories/ocorrenciaRepository');
 const { createOsRepository } = require('../repositories/osRepository');
 const { createParametrosRepository } = require('../repositories/parametrosRepository');
@@ -58,6 +59,7 @@ function createRoutes({ database }) {
   const workOrderRepository = createOsRepository(database);
   const readingRepository = createLeituraRepository(database);
   const parameterRepository = createParametrosRepository(database);
+  const logRepository = createLogRepository();
   const alertService = createAlertService({ alertRepository });
   const occurrenceService = createOccurrenceService({
     occurrenceRepository,
@@ -135,6 +137,7 @@ function createRoutes({ database }) {
       readingRepository,
       parameterRepository,
       alertService,
+      logRepository,
     }),
     authenticate,
     requireRole,
