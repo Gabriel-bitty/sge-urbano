@@ -14,7 +14,7 @@ function validateScenario(payload) {
 
   const fields = {};
   for (const key of Object.keys(payload)) {
-    if (key !== 'scenario') {
+    if (!['scenario', 'injectError'].includes(key)) {
       fields[key] = 'Campo não permitido.';
     }
   }
@@ -22,12 +22,27 @@ function validateScenario(payload) {
   if (!SCENARIOS.includes(payload.scenario)) {
     fields.scenario = 'Use normal, pico ou falha.';
   }
+  if (
+    payload.injectError !== undefined
+    && typeof payload.injectError !== 'boolean'
+  ) {
+    fields.injectError = 'Informe verdadeiro ou falso.';
+  }
+  if (
+    payload.injectError !== undefined
+    && process.env.NODE_ENV !== 'test'
+  ) {
+    fields.injectError = 'A injeção de falha é exclusiva do ambiente de teste.';
+  }
 
   if (Object.keys(fields).length > 0) {
     throw new ValidationError(fields);
   }
 
-  return payload.scenario;
+  return {
+    scenario: payload.scenario,
+    injectError: payload.injectError === true,
+  };
 }
 
 function measuredConsumptionFor(scenario, expectedConsumptionKwh) {
@@ -42,7 +57,7 @@ function measuredConsumptionFor(scenario, expectedConsumptionKwh) {
 
 /**
  * Gera leituras simuladas determinísticas para objetos ativos
- * (RF05, RN04, RN05, RN24, RNF17, D-INS-11).
+ * (RF05, RN04, RN05, RN24, RNF03, RNF17, D-INS-11).
  */
 function createSimulationService({
   database,
@@ -51,6 +66,7 @@ function createSimulationService({
   readingRepository,
   parameterRepository,
   alertService,
+  logRepository,
   clock = () => new Date(),
   batchIdFactory = () => randomUUID(),
   seed = DEFAULT_SEED,
@@ -63,6 +79,8 @@ function createSimulationService({
     || !parameterRepository
     || !alertService
     || typeof alertService.process !== 'function'
+    || !logRepository
+    || typeof logRepository.append !== 'function'
   ) {
     throw new TypeError('Banco e repositórios de simulação são obrigatórios.');
   }
@@ -70,8 +88,8 @@ function createSimulationService({
     throw new TypeError('A semente de simulação deve permanecer fixa em 42.');
   }
 
-  function generate(payload) {
-    const scenario = validateScenario(payload);
+  function generate(payload, actor = null) {
+    const { scenario, injectError } = validateScenario(payload);
     const parameters = parameterRepository.listAsObject();
     const batchId = batchIdFactory();
     const recordedAt = clock().toISOString();
@@ -80,6 +98,20 @@ function createSimulationService({
       const readings = [];
       const alerts = [];
       const activeEquipment = equipmentRepository.list({ status: 'Ativo' });
+      const raiseInjectedFailure = () => {
+        const error = new Error('Falha controlada na geração de leituras.');
+        logRepository.append({
+          level: 'ERROR',
+          operation: 'simulation.generate',
+          correlationId: batchId,
+          batchId,
+          scenario,
+          actorUserId: actor && actor.id ? actor.id : null,
+          occurredAt: recordedAt,
+          message: error.message,
+        });
+        throw error;
+      };
 
       for (const equipment of activeEquipment) {
         const region = regionRepository.findById(equipment.region_id);
@@ -117,6 +149,14 @@ function createSimulationService({
         if (alert) {
           alerts.push(alert);
         }
+
+        if (injectError && readings.length === 1) {
+          raiseInjectedFailure();
+        }
+      }
+
+      if (injectError) {
+        raiseInjectedFailure();
       }
 
       return {

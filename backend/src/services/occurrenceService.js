@@ -232,7 +232,58 @@ function createOccurrenceService({
     return occurrence;
   }
 
-  return { create, findById, findPublic };
+  function list(filters = {}) {
+    const allowedFilters = [
+      'status',
+      'type',
+      'regionId',
+      'equipmentId',
+      'from',
+      'to',
+    ];
+    const fields = {};
+    for (const key of Object.keys(filters)) {
+      if (!allowedFilters.includes(key)) {
+        fields[key] = 'Filtro não permitido.';
+      }
+    }
+    if (filters.type !== undefined && !OCCURRENCE_TYPES.includes(filters.type)) {
+      fields.type = 'Use um dos tipos de ocorrência permitidos.';
+    }
+    if (
+      filters.regionId !== undefined
+      && (
+        !Number.isSafeInteger(Number(filters.regionId))
+        || Number(filters.regionId) < 1
+      )
+    ) {
+      fields.regionId = 'Informe um identificador inteiro positivo.';
+    }
+    if (
+      filters.equipmentId !== undefined
+      && (
+        !Number.isSafeInteger(Number(filters.equipmentId))
+        || Number(filters.equipmentId) < 1
+      )
+    ) {
+      fields.equipmentId = 'Informe um identificador inteiro positivo.';
+    }
+    if (Object.keys(fields).length > 0) {
+      throw new ValidationError(fields);
+    }
+
+    return occurrenceRepository.list({
+      ...filters,
+      regionId: filters.regionId === undefined
+        ? undefined
+        : Number(filters.regionId),
+      equipmentId: filters.equipmentId === undefined
+        ? undefined
+        : Number(filters.equipmentId),
+    });
+  }
+
+  return { create, findById, findPublic, list };
 }
 
 module.exports = {

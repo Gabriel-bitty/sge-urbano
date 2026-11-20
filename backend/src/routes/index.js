@@ -3,6 +3,7 @@ const { createAuditoriaRepository } = require('../repositories/auditoriaReposito
 const { createAlertaRepository } = require('../repositories/alertaRepository');
 const { createEquipamentoRepository } = require('../repositories/equipamentoRepository');
 const { createLeituraRepository } = require('../repositories/leituraRepository');
+const { createLogRepository } = require('../repositories/logRepository');
 const { createOcorrenciaRepository } = require('../repositories/ocorrenciaRepository');
 const { createOsRepository } = require('../repositories/osRepository');
 const { createParametrosRepository } = require('../repositories/parametrosRepository');
@@ -11,6 +12,7 @@ const { createUsuarioRepository } = require('../repositories/usuarioRepository')
 const { createAuthenticationMiddleware } = require('../middleware/authentication');
 const { createAuthorizationMiddleware } = require('../middleware/authorization');
 const { createAlertRouter } = require('./alertRoutes');
+const { createAuditRouter } = require('./auditRoutes');
 const { createAuthRouter } = require('./authRoutes');
 const { createBlockingRouter } = require('./blockingRoutes');
 const { createDashboardRouter } = require('./dashboardRoutes');
@@ -19,7 +21,9 @@ const { createMapRouter } = require('./mapRoutes');
 const { createOccurrenceRouter } = require('./occurrenceRoutes');
 const { createRegionRouter } = require('./regionRoutes');
 const { createReportRouter } = require('./reportRoutes');
+const { createReadingRouter } = require('./readingRoutes');
 const { createSimulationRouter } = require('./simulationRoutes');
+const { createUserRouter } = require('./userRoutes');
 const { createWorkOrderRouter } = require('./workOrderRoutes');
 const { createAlertService } = require('../services/alertService');
 const { createAuditService } = require('../services/auditService');
@@ -30,8 +34,10 @@ const { createEquipmentService } = require('../services/equipmentService');
 const { createMapService } = require('../services/mapService');
 const { createOccurrenceService } = require('../services/occurrenceService');
 const { createRegionService } = require('../services/regionService');
+const { createReadingService } = require('../services/readingService');
 const { createReportService } = require('../services/reportService');
 const { createSimulationService } = require('../services/simulationService');
+const { createUserService } = require('../services/userService');
 const { createWorkOrderService } = require('../services/workOrderService');
 
 /**
@@ -58,7 +64,10 @@ function createRoutes({ database }) {
   const workOrderRepository = createOsRepository(database);
   const readingRepository = createLeituraRepository(database);
   const parameterRepository = createParametrosRepository(database);
+  const logRepository = createLogRepository();
   const alertService = createAlertService({ alertRepository });
+  const readingService = createReadingService({ readingRepository });
+  const userService = createUserService({ userRepository });
   const occurrenceService = createOccurrenceService({
     occurrenceRepository,
     regionRepository,
@@ -135,12 +144,28 @@ function createRoutes({ database }) {
       readingRepository,
       parameterRepository,
       alertService,
+      logRepository,
     }),
     authenticate,
     requireRole,
   }));
   router.use('/alerts', createAlertRouter({
     alertService,
+    authenticate,
+    requireRole,
+  }));
+  router.use('/readings', createReadingRouter({
+    readingService,
+    authenticate,
+    requireRole,
+  }));
+  router.use('/audit-logs', createAuditRouter({
+    auditService,
+    authenticate,
+    requireRole,
+  }));
+  router.use('/users', createUserRouter({
+    userService,
     authenticate,
     requireRole,
   }));
@@ -165,6 +190,8 @@ function createRoutes({ database }) {
   }));
   router.use('/occurrences', createOccurrenceRouter({
     occurrenceService,
+    authenticate,
+    requireRole,
   }));
 
   return router;
