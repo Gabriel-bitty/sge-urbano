@@ -30,7 +30,7 @@ function createRegionRouter({ regionService, authenticate, requireRole }) {
 
   router.patch('/:id', ...managerOnly, (req, res) => (
     res.status(200).json(
-      toRegionResponse(regionService.update(req.params.id, req.body))
+      toRegionResponse(regionService.update(req.params.id, req.body, req.user))
     )
   ));
 

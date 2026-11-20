@@ -70,10 +70,19 @@ function createRegionService({
   database,
   regionRepository,
   equipmentRepository,
+  auditService,
   clock = () => new Date(),
 }) {
-  if (!database || !regionRepository || !equipmentRepository) {
-    throw new TypeError('Banco e repositórios de regiões/equipamentos são obrigatórios.');
+  if (
+    !database
+    || !regionRepository
+    || !equipmentRepository
+    || !auditService
+    || typeof auditService.record !== 'function'
+  ) {
+    throw new TypeError(
+      'Banco, repositórios de regiões/equipamentos e serviço de auditoria são obrigatórios.'
+    );
   }
 
   function list() {
@@ -103,7 +112,7 @@ function createRegionService({
     });
   }
 
-  function update(id, payload) {
+  function update(id, payload, actor) {
     const regionId = parseId(id);
     validateObject(payload, REGION_FIELDS);
     validateRegionValues(payload, false);
@@ -153,6 +162,21 @@ function createRegionService({
           updatedAt: values.updatedAt,
         });
       }
+
+      auditService.record({
+        actorUserId: actor.id,
+        actorRole: actor.role,
+        action: 'region.inactivated',
+        targetType: 'region',
+        targetId: String(regionId),
+        previousValue: currentRegion.status,
+        newValue: values.status,
+        details: JSON.stringify({
+          affectedEquipmentIds: activeEquipment
+            .map((equipment) => equipment.id)
+            .sort((firstId, secondId) => firstId - secondId),
+        }),
+      });
 
       return regionRepository.findById(regionId);
     });

@@ -41,6 +41,7 @@ function createRoutes({ database }) {
       database,
       regionRepository: createRegiaoRepository(database),
       equipmentRepository: createEquipamentoRepository(database),
+      auditService,
     }),
     authenticate,
     requireRole,
