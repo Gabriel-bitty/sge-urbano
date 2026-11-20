@@ -3,6 +3,8 @@ const { createAuditoriaRepository } = require('../repositories/auditoriaReposito
 const { createAlertaRepository } = require('../repositories/alertaRepository');
 const { createEquipamentoRepository } = require('../repositories/equipamentoRepository');
 const { createLeituraRepository } = require('../repositories/leituraRepository');
+const { createOcorrenciaRepository } = require('../repositories/ocorrenciaRepository');
+const { createOsRepository } = require('../repositories/osRepository');
 const { createParametrosRepository } = require('../repositories/parametrosRepository');
 const { createRegiaoRepository } = require('../repositories/regiaoRepository');
 const { createUsuarioRepository } = require('../repositories/usuarioRepository');
@@ -12,15 +14,19 @@ const { createAlertRouter } = require('./alertRoutes');
 const { createAuthRouter } = require('./authRoutes');
 const { createBlockingRouter } = require('./blockingRoutes');
 const { createEquipmentRouter } = require('./equipmentRoutes');
+const { createOccurrenceRouter } = require('./occurrenceRoutes');
 const { createRegionRouter } = require('./regionRoutes');
 const { createSimulationRouter } = require('./simulationRoutes');
+const { createWorkOrderRouter } = require('./workOrderRoutes');
 const { createAlertService } = require('../services/alertService');
 const { createAuditService } = require('../services/auditService');
 const { createAuthService } = require('../services/authService');
 const { createBlockingService } = require('../services/blockingService');
 const { createEquipmentService } = require('../services/equipmentService');
+const { createOccurrenceService } = require('../services/occurrenceService');
 const { createRegionService } = require('../services/regionService');
 const { createSimulationService } = require('../services/simulationService');
+const { createWorkOrderService } = require('../services/workOrderService');
 
 /**
  * Compõe os repositórios, serviços e rotas sem executar SQL nesta camada (RNF18).
@@ -42,9 +48,26 @@ function createRoutes({ database }) {
   const regionRepository = createRegiaoRepository(database);
   const equipmentRepository = createEquipamentoRepository(database);
   const alertRepository = createAlertaRepository(database);
+  const occurrenceRepository = createOcorrenciaRepository(database);
+  const workOrderRepository = createOsRepository(database);
   const readingRepository = createLeituraRepository(database);
   const parameterRepository = createParametrosRepository(database);
   const alertService = createAlertService({ alertRepository });
+  const occurrenceService = createOccurrenceService({
+    occurrenceRepository,
+    regionRepository,
+    equipmentRepository,
+  });
+  const workOrderService = createWorkOrderService({
+    database,
+    workOrderRepository,
+    alertRepository,
+    occurrenceRepository,
+    regionRepository,
+    equipmentRepository,
+    userRepository,
+    auditService,
+  });
 
   router.use('/auth', createAuthRouter({
     authService,
@@ -97,6 +120,14 @@ function createRoutes({ database }) {
     alertService,
     authenticate,
     requireRole,
+  }));
+  router.use('/work-orders', createWorkOrderRouter({
+    workOrderService,
+    authenticate,
+    requireRole,
+  }));
+  router.use('/occurrences', createOccurrenceRouter({
+    occurrenceService,
   }));
 
   return router;
