@@ -42,7 +42,7 @@ function createUsuarioRepository(database) {
     appendFilter(clauses, parameters, 'status = ?', filters.status);
 
     return db.prepare(`
-      SELECT *
+      SELECT id, name, username, role, status, created_at, updated_at
       FROM users
       ${whereClause(clauses)}
       ORDER BY name, id
