@@ -1,0 +1,121 @@
+const {
+  appendFilter,
+  insertAndSelect,
+  requireDatabase,
+  updateById,
+  whereClause,
+} = require('./repositoryUtils');
+
+function createOsRepository(database) {
+  const db = requireDatabase(database);
+
+  function create(workOrder) {
+    return insertAndSelect(db, 'work_orders', `
+      INSERT INTO work_orders (
+        code, origin, alert_id, occurrence_id, region_id, equipment_id,
+        location, description, status, assigned_technician_id,
+        created_by_user_id, solution_description, cancellation_reason,
+        created_at, updated_at
+      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+    `, [
+      workOrder.code,
+      workOrder.origin,
+      workOrder.alertId ?? null,
+      workOrder.occurrenceId ?? null,
+      workOrder.regionId,
+      workOrder.equipmentId ?? null,
+      workOrder.location,
+      workOrder.description,
+      workOrder.status ?? 'Aberta',
+      workOrder.assignedTechnicianId ?? null,
+      workOrder.createdByUserId,
+      workOrder.solutionDescription ?? null,
+      workOrder.cancellationReason ?? null,
+      workOrder.createdAt,
+      workOrder.updatedAt ?? workOrder.createdAt,
+    ]);
+  }
+
+  function findById(id) {
+    return db.prepare('SELECT * FROM work_orders WHERE id = ?').get(id);
+  }
+
+  function findActiveByAlertId(alertId) {
+    return db.prepare(`
+      SELECT *
+      FROM work_orders
+      WHERE alert_id = ?
+        AND status IN ('Aberta', 'Atribuída', 'Em atendimento')
+      ORDER BY id DESC
+      LIMIT 1
+    `).get(alertId);
+  }
+
+  function list(filters = {}) {
+    const clauses = [];
+    const parameters = [];
+    appendFilter(clauses, parameters, 'status = ?', filters.status);
+    appendFilter(clauses, parameters, 'region_id = ?', filters.regionId);
+    appendFilter(clauses, parameters, 'equipment_id = ?', filters.equipmentId);
+    appendFilter(
+      clauses,
+      parameters,
+      'assigned_technician_id = ?',
+      filters.assignedTechnicianId
+    );
+    appendFilter(clauses, parameters, 'alert_id = ?', filters.alertId);
+    appendFilter(clauses, parameters, 'occurrence_id = ?', filters.occurrenceId);
+    appendFilter(clauses, parameters, 'updated_at >= ?', filters.from);
+    appendFilter(clauses, parameters, 'updated_at <= ?', filters.to);
+
+    return db.prepare(`
+      SELECT *
+      FROM work_orders
+      ${whereClause(clauses)}
+      ORDER BY updated_at DESC, id DESC
+    `).all(...parameters);
+  }
+
+  function update(id, values) {
+    return updateById(db, 'work_orders', {
+      status: 'status',
+      assignedTechnicianId: 'assigned_technician_id',
+      solutionDescription: 'solution_description',
+      cancellationReason: 'cancellation_reason',
+      updatedAt: 'updated_at',
+    }, id, values);
+  }
+
+  function aggregateByStatus(filters = {}) {
+    const clauses = [];
+    const parameters = [];
+    appendFilter(clauses, parameters, 'region_id = ?', filters.regionId);
+    appendFilter(
+      clauses,
+      parameters,
+      'assigned_technician_id = ?',
+      filters.assignedTechnicianId
+    );
+    appendFilter(clauses, parameters, 'updated_at >= ?', filters.from);
+    appendFilter(clauses, parameters, 'updated_at <= ?', filters.to);
+
+    return db.prepare(`
+      SELECT status, COUNT(*) AS total
+      FROM work_orders
+      ${whereClause(clauses)}
+      GROUP BY status
+      ORDER BY status
+    `).all(...parameters);
+  }
+
+  return {
+    aggregateByStatus,
+    create,
+    findActiveByAlertId,
+    findById,
+    list,
+    update,
+  };
+}
+
+module.exports = { createOsRepository };
