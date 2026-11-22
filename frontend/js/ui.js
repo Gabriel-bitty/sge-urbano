@@ -43,7 +43,7 @@ export function showFieldErrors(form, fields = {}) {
   clearFieldErrors(form);
   let firstInvalid = null;
 
-  for (const [name, message] of Object.entries(fields)) {
+  for (const [name, message] of Object.entries(fields ?? {})) {
     const wrapper = form.querySelector(`[data-field="${CSS.escape(name)}"]`);
     if (!wrapper) {
       continue;
@@ -91,4 +91,122 @@ export function pageHeader(title, subtitle) {
 
 export function emptyState(message) {
   return h('p', { class: 'empty-state', dataset: { cy: 'estado-vazio' } }, message);
+}
+
+/** Selo de estado com texto visível (não depende só da cor). */
+export function statusBadge(status) {
+  const slug = String(status ?? '')
+    .normalize('NFD')
+    .replace(/[̀-ͯ]/g, '')
+    .toLowerCase()
+    .replace(/\s+/g, '-');
+  return h('span', { class: `badge badge-${slug}`, dataset: { cy: 'status' } }, status ?? '—');
+}
+
+/**
+ * Tabela simples. Cada coluna define o rótulo e como exibir a linha.
+ * @param {{ columns: Array<{ label: string, render: Function }>,
+ *   rows: object[], emptyMessage: string, cy?: string }} options
+ */
+export function dataTable({ columns, rows, emptyMessage, cy }) {
+  if (rows.length === 0) {
+    return emptyState(emptyMessage);
+  }
+
+  return h('div', { class: 'table-wrapper' },
+    h('table', { class: 'table', dataset: { cy } },
+      h('thead', {}, h('tr', {}, columns.map((column) => h('th', { scope: 'col' }, column.label)))),
+      h('tbody', {}, rows.map((row) => h('tr', { dataset: { id: row.id } },
+        columns.map((column) => h('td', { dataset: { label: column.label } }, column.render(row)))
+      )))
+    )
+  );
+}
+
+/**
+ * Diálogo de confirmação. Quando `reason` é informado, exige um motivo
+ * com tamanho mínimo após remover espaços das pontas (RN16, D-INS-14).
+ * `onConfirm` recebe o motivo; se lançar erro, a mensagem é exibida
+ * no próprio diálogo e ele continua aberto.
+ */
+export function confirmDialog({
+  title,
+  message,
+  confirmLabel = 'Confirmar',
+  danger = false,
+  reason,
+  onConfirm,
+}) {
+  const feedback = h('div', { 'aria-live': 'assertive' });
+  const confirmButton = h('button', {
+    type: 'submit',
+    class: danger ? 'button button-danger' : 'button',
+    dataset: { cy: 'confirmar' },
+  }, confirmLabel);
+  const cancelButton = h('button', {
+    type: 'button',
+    class: 'button button-secondary',
+    dataset: { cy: 'cancelar' },
+  }, 'Cancelar');
+
+  let reasonInput = null;
+  let counter = null;
+  if (reason) {
+    reasonInput = h('textarea', { rows: '3', required: true, dataset: { cy: 'motivo-input' } });
+    counter = h('small', { class: 'field-hint', 'aria-live': 'polite' });
+    const updateCounter = () => {
+      const length = reasonInput.value.trim().length;
+      counter.textContent = `${length} de no mínimo ${reason.minLength} caracteres.`;
+    };
+    reasonInput.addEventListener('input', updateCounter);
+    updateCounter();
+  }
+
+  const form = h('form', { method: 'dialog', class: 'form' },
+    h('h2', {}, title),
+    message ? h('p', {}, message) : null,
+    feedback,
+    reasonInput ? field({ label: reason.label, name: 'reason', control: reasonInput }) : null,
+    counter,
+    h('div', { class: 'dialog-actions' }, cancelButton, confirmButton)
+  );
+  const dialog = h('dialog', { class: 'dialog', dataset: { cy: 'dialogo' } }, form);
+
+  cancelButton.addEventListener('click', () => dialog.close());
+  dialog.addEventListener('close', () => dialog.remove());
+
+  form.addEventListener('submit', async (event) => {
+    event.preventDefault();
+    feedback.replaceChildren();
+    clearFieldErrors(form);
+
+    const reasonText = reasonInput ? reasonInput.value.trim() : undefined;
+    if (reason && reasonText.length < reason.minLength) {
+      showFieldErrors(form, {
+        reason: `Informe um motivo com pelo menos ${reason.minLength} caracteres.`,
+      });
+      return;
+    }
+
+    try {
+      await withBusy(confirmButton, () => onConfirm(reasonText));
+      dialog.close();
+    } catch (error) {
+      if (!showFieldErrors(form, error.fields)) {
+        feedback.replaceChildren(alertBox(error.message, 'error'));
+      }
+    }
+  });
+
+  document.body.append(dialog);
+  dialog.showModal();
+  (reasonInput ?? confirmButton).focus();
+  return dialog;
+}
+
+/** Mostra o erro da API nos campos do formulário ou como mensagem geral. */
+export function showApiError(form, feedback, error) {
+  if (!showFieldErrors(form, error.fields)) {
+    feedback.replaceChildren(alertBox(error.message, 'error'));
+  }
 }
