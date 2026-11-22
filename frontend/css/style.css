@@ -483,6 +483,32 @@ h1:focus {
   color: #58616b;
 }
 
+.badge-suspenso {
+  background: var(--color-warning-bg);
+  color: var(--color-warning);
+}
+
+.badge-resolvido {
+  background: var(--color-primary-soft);
+  color: var(--color-primary-strong);
+}
+
+/* Severidade dos alertas */
+.badge-baixa {
+  background: var(--severity-low-bg);
+  color: var(--severity-low);
+}
+
+.badge-media {
+  background: var(--severity-medium-bg);
+  color: var(--severity-medium);
+}
+
+.badge-alta {
+  background: var(--severity-high-bg);
+  color: var(--severity-high);
+}
+
 /* Diálogo de confirmação */
 .dialog {
   width: min(32rem, calc(100vw - 2rem));

@@ -83,3 +83,13 @@ const EQUIPMENT_TYPE_LABELS = Object.freeze({
 export function equipmentTypeLabel(type) {
   return EQUIPMENT_TYPE_LABELS[type] ?? type;
 }
+
+const ANOMALY_LABELS = {
+  falha_total: 'Falha total',
+  consumo_acima: 'Consumo acima',
+  consumo_abaixo: 'Consumo abaixo',
+};
+
+export function anomalyLabel(type) {
+  return ANOMALY_LABELS[type] ?? type ?? '—';
+}
