@@ -12,11 +12,13 @@ const MENU = [
   { href: '#/ocorrencia/nova', label: 'Registrar ocorrência', roles: ['Visitante'] },
   { href: '#/ocorrencia/consulta', label: 'Consultar protocolo', roles: ['Visitante'] },
   { href: '#/painel', label: 'Painel', roles: ['Gestor', 'Técnico'] },
+  { href: '#/dashboard', label: 'Dashboard', roles: ['Gestor'] },
   { href: '#/regioes', label: 'Regiões', roles: ['Gestor'] },
   { href: '#/equipamentos', label: 'Equipamentos', roles: ['Gestor'] },
   { href: '#/simulacao', label: 'Simulação', roles: ['Gestor'] },
   { href: '#/alertas', label: 'Alertas', roles: ['Gestor'] },
   { href: '#/os', label: 'Ordens de serviço', roles: ['Gestor', 'Técnico'] },
+  { href: '#/relatorios', label: 'Relatórios', roles: ['Gestor'] },
   { href: '#/login', label: 'Entrar', roles: ['Visitante'] },
 ];
 
