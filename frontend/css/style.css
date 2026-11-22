@@ -565,6 +565,102 @@ h1:focus {
   word-break: break-all;
 }
 
+/* Dashboard */
+.stat-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(14rem, 1fr));
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.stat-card {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  padding: 1rem 1.25rem;
+}
+
+.stat-card p {
+  margin: 0;
+}
+
+.stat-title {
+  color: var(--color-muted);
+  font-size: 0.9rem;
+}
+
+.stat-value {
+  font-size: 1.9rem;
+  font-weight: 700;
+  color: var(--color-primary-strong);
+}
+
+.stat-detail,
+.small {
+  font-size: 0.85rem;
+  color: var(--color-muted);
+}
+
+.chart-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(22rem, 1fr));
+  gap: 1rem;
+}
+
+.chart {
+  width: 100%;
+  height: auto;
+}
+
+.chart-label,
+.chart-value {
+  font-size: 13px;
+  fill: var(--color-muted);
+}
+
+.chart-axis {
+  stroke: var(--color-border);
+}
+
+.bar-measured {
+  fill: var(--color-primary);
+}
+
+.bar-expected {
+  fill: #9cc3de;
+}
+
+.chart-legend {
+  display: flex;
+  gap: 1rem;
+  font-size: 0.85rem;
+  color: var(--color-muted);
+}
+
+.chart-legend span::before {
+  content: "";
+  display: inline-block;
+  width: 0.8rem;
+  height: 0.8rem;
+  margin-right: 0.35rem;
+  border-radius: 2px;
+  vertical-align: -1px;
+}
+
+.legend-measured::before {
+  background: var(--color-primary);
+}
+
+.legend-expected::before {
+  background: #9cc3de;
+}
+
+.filters-submit {
+  display: flex;
+  align-items: flex-end;
+}
+
 /* Severidade dos alertas */
 .badge-baixa {
   background: var(--severity-low-bg);
