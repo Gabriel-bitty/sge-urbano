@@ -8,6 +8,8 @@ import { loginView } from './views/login.js';
 import { painelView } from './views/painel.js';
 import { regioesView } from './views/regioes.js';
 import { equipamentosView } from './views/equipamentos.js';
+import { simulacaoView } from './views/simulacao.js';
+import { alertasView } from './views/alertas.js';
 
 const BOTH_PROFILES = ['Gestor', 'Técnico'];
 const MANAGER_ONLY = ['Gestor'];
@@ -18,6 +20,8 @@ addRoutes([
   { path: '/painel', title: 'Painel', view: painelView, roles: BOTH_PROFILES },
   { path: '/regioes', title: 'Regiões', view: regioesView, roles: MANAGER_ONLY },
   { path: '/equipamentos', title: 'Equipamentos', view: equipamentosView, roles: MANAGER_ONLY },
+  { path: '/simulacao', title: 'Simulação', view: simulacaoView, roles: MANAGER_ONLY },
+  { path: '/alertas', title: 'Alertas', view: alertasView, roles: MANAGER_ONLY },
 ]);
 
 // Sessão expirada ou encerrada no servidor: volta ao login (RNF06, CT01).
