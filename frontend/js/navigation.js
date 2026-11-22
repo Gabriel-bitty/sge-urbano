@@ -9,6 +9,8 @@ import { toast } from './ui.js';
 
 const MENU = [
   { href: '#/', label: 'Início', roles: ['Visitante'] },
+  { href: '#/ocorrencia/nova', label: 'Registrar ocorrência', roles: ['Visitante'] },
+  { href: '#/ocorrencia/consulta', label: 'Consultar protocolo', roles: ['Visitante'] },
   { href: '#/painel', label: 'Painel', roles: ['Gestor', 'Técnico'] },
   { href: '#/regioes', label: 'Regiões', roles: ['Gestor'] },
   { href: '#/equipamentos', label: 'Equipamentos', roles: ['Gestor'] },
