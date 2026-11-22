@@ -12,9 +12,20 @@ function toRegionResponse(region) {
   };
 }
 
+function toPublicRegionResponse(region) {
+  return {
+    id: region.id,
+    name: region.name,
+  };
+}
+
 function createRegionRouter({ regionService, authenticate, requireRole }) {
   const router = Router();
   const managerOnly = [authenticate, requireRole('Gestor')];
+
+  router.get('/public', (req, res) => (
+    res.status(200).json(regionService.list().map(toPublicRegionResponse))
+  ));
 
   router.get('/', ...managerOnly, (req, res) => (
     res.status(200).json(regionService.list().map(toRegionResponse))
