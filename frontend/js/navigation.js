@@ -19,6 +19,7 @@ const MENU = [
   { href: '#/alertas', label: 'Alertas', roles: ['Gestor'] },
   { href: '#/os', label: 'Ordens de serviço', roles: ['Gestor', 'Técnico'] },
   { href: '#/relatorios', label: 'Relatórios', roles: ['Gestor'] },
+  { href: '#/mapa', label: 'Mapa', roles: ['Gestor', 'Técnico'] },
   { href: '#/login', label: 'Entrar', roles: ['Visitante'] },
 ];
 
