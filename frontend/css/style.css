@@ -373,7 +373,155 @@ h1:focus {
   background: var(--color-success);
 }
 
+/* Barra de ferramentas, filtros e grades de formulário */
+.toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+}
+
+.filters,
+.form-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(12rem, 1fr));
+  gap: 1rem;
+}
+
+.form-actions,
+.dialog-actions,
+.row-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.form-actions,
+.dialog-actions {
+  justify-content: flex-end;
+}
+
+.button-small {
+  padding: 0.25rem 0.6rem;
+  font-size: 0.875rem;
+}
+
+.button-danger-text {
+  color: var(--color-danger);
+  border-color: var(--color-danger);
+}
+
+.button-danger-text:hover {
+  background: var(--color-danger-bg);
+}
+
+/* Tabelas */
+.table-wrapper {
+  overflow-x: auto;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.table th,
+.table td {
+  padding: 0.65rem 0.9rem;
+  text-align: left;
+  border-bottom: 1px solid var(--color-border);
+  vertical-align: middle;
+}
+
+.table th {
+  background: #eef2f6;
+  font-size: 0.85rem;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+  color: var(--color-muted);
+}
+
+.table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.table tbody tr:hover {
+  background: #f9fbfc;
+}
+
+/* Selos de estado: cor + texto */
+.badge {
+  display: inline-block;
+  padding: 0.1rem 0.55rem;
+  border-radius: 999px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  background: #eef2f6;
+  color: var(--color-muted);
+  white-space: nowrap;
+}
+
+.badge-ativo,
+.badge-ativa {
+  background: var(--color-success-bg);
+  color: var(--color-success);
+}
+
+.badge-bloqueado,
+.badge-bloqueada {
+  background: var(--color-danger-bg);
+  color: var(--color-danger);
+}
+
+.badge-inativo,
+.badge-inativa {
+  background: #eceff2;
+  color: #58616b;
+}
+
+/* Diálogo de confirmação */
+.dialog {
+  width: min(32rem, calc(100vw - 2rem));
+  border: none;
+  border-radius: var(--radius);
+  padding: 1.5rem;
+  box-shadow: 0 12px 32px rgb(16 24 40 / 0.25);
+}
+
+.dialog::backdrop {
+  background: rgb(16 24 40 / 0.45);
+}
+
 @media (max-width: 640px) {
+  /* Tabela vira lista de cartões em telas pequenas. */
+  .table thead {
+    display: none;
+  }
+
+  .table tr {
+    display: block;
+    border-bottom: 1px solid var(--color-border);
+    padding: 0.5rem 0;
+  }
+
+  .table td {
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+    border: none;
+    padding: 0.3rem 0.9rem;
+  }
+
+  .table td::before {
+    content: attr(data-label);
+    font-weight: 600;
+    color: var(--color-muted);
+  }
+
   .topbar {
     padding: 0.75rem 1rem;
   }
