@@ -493,6 +493,64 @@ h1:focus {
   color: var(--color-primary-strong);
 }
 
+/* Estados de OS */
+.badge-aberta {
+  background: var(--color-primary-soft);
+  color: var(--color-primary-strong);
+}
+
+.badge-atribuida {
+  background: #ece6fb;
+  color: #5b3fb0;
+}
+
+.badge-em-atendimento {
+  background: var(--color-warning-bg);
+  color: var(--color-warning);
+}
+
+.badge-concluida {
+  background: var(--color-success-bg);
+  color: var(--color-success);
+}
+
+.badge-cancelada {
+  background: #eceff2;
+  color: #58616b;
+}
+
+/* Detalhe da OS */
+.details {
+  display: grid;
+  grid-template-columns: max-content 1fr;
+  gap: 0.4rem 1.5rem;
+  margin: 1rem 0 0;
+}
+
+.details dt {
+  font-weight: 600;
+  color: var(--color-muted);
+}
+
+.details dd {
+  margin: 0;
+}
+
+.actions-bar,
+.inline-form {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: 0.75rem;
+}
+
+.inline-form select {
+  padding: 0.55rem 0.7rem;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  font: inherit;
+}
+
 /* Severidade dos alertas */
 .badge-baixa {
   background: var(--severity-low-bg);
