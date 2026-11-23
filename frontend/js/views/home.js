@@ -13,9 +13,11 @@ export function homeView(container) {
         'equipamentos públicos, alertas de anomalia e ordens de serviço.'
       ),
       h('div', { class: 'hero-actions' },
+        h('a', { class: 'button', href: '#/ocorrencia/nova', dataset: { cy: 'registrar-ocorrencia' } }, 'Registrar ocorrência'),
+        h('a', { class: 'button button-secondary', href: '#/ocorrencia/consulta', dataset: { cy: 'consultar-protocolo' } }, 'Consultar protocolo'),
         user
-          ? h('a', { class: 'button', href: '#/painel' }, 'Ir para o painel')
-          : h('a', { class: 'button', href: '#/login', dataset: { cy: 'ir-login' } },
+          ? h('a', { class: 'button button-ghost', href: '#/painel' }, 'Ir para o painel')
+          : h('a', { class: 'button button-ghost', href: '#/login', dataset: { cy: 'ir-login' } },
             'Entrar como Gestor ou Técnico')
       )
     )
