@@ -13,6 +13,8 @@ import { alertasView } from './views/alertas.js';
 import { ordensServicoView } from './views/ordensServico.js';
 import { ordemServicoDetalheView } from './views/ordemServicoDetalhe.js';
 import { consultarOcorrenciaView, registrarOcorrenciaView } from './views/ocorrencias.js';
+import { dashboardView } from './views/dashboard.js';
+import { relatoriosView } from './views/relatorios.js';
 
 const BOTH_PROFILES = ['Gestor', 'Técnico'];
 const MANAGER_ONLY = ['Gestor'];
@@ -23,6 +25,8 @@ addRoutes([
   { path: '/ocorrencia/nova', title: 'Registrar ocorrência', view: registrarOcorrenciaView },
   { path: '/ocorrencia/consulta', title: 'Consultar ocorrência', view: consultarOcorrenciaView },
   { path: '/painel', title: 'Painel', view: painelView, roles: BOTH_PROFILES },
+  { path: '/dashboard', title: 'Dashboard', view: dashboardView, roles: MANAGER_ONLY },
+  { path: '/relatorios', title: 'Relatórios', view: relatoriosView, roles: MANAGER_ONLY },
   { path: '/regioes', title: 'Regiões', view: regioesView, roles: MANAGER_ONLY },
   { path: '/equipamentos', title: 'Equipamentos', view: equipamentosView, roles: MANAGER_ONLY },
   { path: '/simulacao', title: 'Simulação', view: simulacaoView, roles: MANAGER_ONLY },
