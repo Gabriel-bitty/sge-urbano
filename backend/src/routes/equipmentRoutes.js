@@ -1,3 +1,4 @@
+/** Rotas protegidas de gestão de equipamentos (RF02, RF04, CT03). */
 const { Router } = require('express');
 
 function toEquipmentResponse(equipment) {

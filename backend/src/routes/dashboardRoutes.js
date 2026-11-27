@@ -1,3 +1,4 @@
+/** Rota protegida de dashboard agregado (RF14, RNF11, CA14.1–CA14.3, CT15). */
 const { Router } = require('express');
 
 function toAlertSummary(alert) {

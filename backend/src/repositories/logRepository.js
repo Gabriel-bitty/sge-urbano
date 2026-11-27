@@ -1,3 +1,4 @@
+/** Destino substituível de logs técnicos estruturados (RNF03, CT04). */
 function createLogRepository({ write } = {}) {
   const sink = write ?? ((entry) => {
     process.stderr.write(`${JSON.stringify(entry)}\n`);

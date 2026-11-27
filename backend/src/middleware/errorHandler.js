@@ -1,3 +1,4 @@
+/** Normaliza erros HTTP com campo/motivo sem vazar falhas internas (RNF09, RNF19). */
 const {
   ForbiddenError,
   NotFoundError,

@@ -1,3 +1,4 @@
+/** Encaminha rejeições assíncronas ao tratamento central de erros (RNF18). */
 function asyncHandler(handler) {
   return function handleAsyncRoute(req, res, next) {
     Promise.resolve(handler(req, res, next)).catch(next);

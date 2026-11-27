@@ -1,3 +1,4 @@
+/** SQL de OS, unicidade por alerta, transições e filtros (RF09–RF11, RN14, RN19). */
 const {
   appendFilter,
   insertAndSelect,

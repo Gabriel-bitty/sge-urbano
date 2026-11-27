@@ -1,3 +1,4 @@
+/** Rota de geração transacional de leituras simuladas (RF05, RN05, CT04, CT24). */
 const { Router } = require('express');
 
 function toReadingResponse(reading) {

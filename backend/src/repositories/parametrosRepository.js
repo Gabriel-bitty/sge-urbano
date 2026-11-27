@@ -1,3 +1,4 @@
+/** Acesso parametrizado aos parâmetros de anomalia (RF06, RNF13, CT06). */
 const { requireDatabase } = require('./repositoryUtils');
 
 function createParametrosRepository(database) {

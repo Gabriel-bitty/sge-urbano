@@ -1,3 +1,4 @@
+/** Rota de consulta e filtros de alertas (RF07, RF08, CT07, CT08). */
 const { Router } = require('express');
 const { ValidationError } = require('../services/domainErrors');
 

@@ -1,3 +1,4 @@
+/** Persistência e projeção pública mínima de ocorrências (RF12, RF13, RN15, RN26). */
 const {
   appendFilter,
   insertAndSelect,
