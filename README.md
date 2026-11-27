@@ -46,25 +46,27 @@ cd sge-urbano
 npm install
 ```
 
-## 5. Execução local
+## 5. Inicializar a aplicação e o frontend
 
-Ambiente normal:
+O frontend é estático (HTML, CSS e JavaScript) e é servido pelo próprio
+back-end Express, Para inicializá-lo:
 
-```sh
-npm start
-```
+1. Instale as dependências na raiz do repositório, conforme a seção
+   [Instalação](#4-instalação).
+2. No terminal, ainda na raiz do projeto, inicie a aplicação:
 
-Ambiente de teste, com banco em memória e seed sintética:
+   ```sh
+   npm start
+   ```
 
-```sh
-npm run start:test
-```
+3. Aguarde a mensagem `SGE-Urbano disponível em http://localhost:3000`.
+4. Abra `http://localhost:3000` no navegador. A interface e a API ficam
+   disponíveis na mesma origem; a API usa o caminho `/api`.
+5. Para encerrar, volte ao terminal e pressione `Ctrl+C`.
 
-A API fica disponível em `http://localhost:3000/api`. A interface estática fica
-em `http://localhost:3000`.
-
-Em modo de teste, o endpoint `POST /api/test/reset` recria a massa de referência.
-Esse endpoint não é registrado fora de `NODE_ENV=test` (`RNF20`, CT26).
+Para executar em modo de teste, com banco em memória e seed sintética, use.
+`npm run start:test`
+`NODE_ENV=test` (`RNF20`, CT26).
 
 ## 6. Contas sintéticas de teste
 
